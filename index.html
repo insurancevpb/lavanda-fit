@@ -1821,54 +1821,15 @@
     };
 
     // ==== РЕЦЕПТЫ ====
-    function getRandomRecipes(count) {
-      var pool = RECIPES.slice();
-      var selected = [];
-      while (pool.length && selected.length < count) {
-        var idx = Math.floor(Math.random() * pool.length);
-        var item = pool.splice(idx, 1)[0];
-        selected.push(item);
-      }
-      return selected;
-    }
+    var recipesBatchSize = 4; // сколько рецептов добавляем за раз
 
-    function openRecipeModal(recipe) {
-      modalRecipeTitleEl.innerHTML = recipe.title;
-      modalRecipeTypeKcalEl.innerHTML = recipe.type + " • " + recipe.kcal + " ккал";
-      modalRecipeMacrosEl.innerHTML = "Б: " + recipe.protein + " г • Ж: " + recipe.fat + " г • У: " + recipe.carbs + " г";
-
-      modalIngredientsListEl.innerHTML = "";
-      for (var i = 0; i < recipe.ingredients.length; i++) {
-        var ing = recipe.ingredients[i];
-        var li = document.createElement("li");
-        li.innerHTML = ing.name + " — " + ing.amount + " " + ing.unit;
-        modalIngredientsListEl.appendChild(li);
+    function renderRecipes(append) {
+      // если append не указан или равен false — очищаем список и начинаем сначала
+      if (!append) {
+        recipesListEl.innerHTML = "";
       }
 
-      modalStepsListEl.innerHTML = "";
-      for (var j = 0; j < recipe.steps.length; j++) {
-        var st = recipe.steps[j];
-        var li2 = document.createElement("li");
-        li2.innerHTML = st;
-        modalStepsListEl.appendChild(li2);
-      }
-
-      recipeModalEl.classList.add("active");
-    }
-    function closeRecipeModal() {
-      recipeModalEl.classList.remove("active");
-    }
-
-    modalCloseBtn.onclick = closeRecipeModal;
-    recipeModalEl.onclick = function (e) {
-      if (e.target === recipeModalEl || (e.target && e.target.classList && e.target.classList.contains("modal-backdrop"))) {
-        closeRecipeModal();
-      }
-    };
-
-    function renderRecipes() {
-      recipesListEl.innerHTML = "";
-      var items = getRandomRecipes(4);
+      var items = getRandomRecipes(recipesBatchSize);
       for (var i = 0; i < items.length; i++) {
         var r = items[i];
         var card = document.createElement("article");
@@ -1891,7 +1852,10 @@
       }
     }
 
-    recipesRefreshBtn.onclick = renderRecipes;
+    // при нажатии "Ещё идеи" добавляем НОВУЮ порцию рецептов, не очищая список
+    recipesRefreshBtn.onclick = function () {
+      renderRecipes(true);
+    };
 
     // ==== МИКРОДВИЖЕНИЯ ====
     function getRandomMicroMoves(count) {
@@ -1993,7 +1957,7 @@
     renderMeasures();
     syncWaterProgress();
     syncCaloriesProgress();
-    renderRecipes();
+    renderRecipes(false);
     renderMicroMoves();
     renderDiary();
     updateProfileFromUI(false);
