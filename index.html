@@ -1254,6 +1254,8 @@
     var calorieTargetTextEl = document.getElementById("calorieTargetText");
     var caloriesTargetEl = document.getElementById("caloriesTarget");
     var waterTargetEl = document.getElementById("waterTarget");
+    var weightEditBtn = document.getElementById("weightEditBtn");
+    var weightClearBtn = document.getElementById("weightClearBtn");
     var dashboardEditBtn = document.getElementById("dashboardEditBtn");
     var dashboardClearBtn = document.getElementById("dashboardClearBtn");
     var mealsEditBtn = document.getElementById("mealsEditBtn");
@@ -1536,6 +1538,30 @@
 
       weightEntryEl.value = "";
       renderWeightGraph();
+          // Кнопки в блоке "График веса"
+    if (weightEditBtn) {
+      weightEditBtn.onclick = function () {
+        // Подставляем последний вес в поле "Новый вес" и ставим туда курсор
+        if (weightHistory && weightHistory.length) {
+          var last = weightHistory[weightHistory.length - 1];
+          weightEntryEl.value = String(last.value).replace(".", ",");
+        }
+        weightEntryEl.focus();
+        // Чуть прокрутим страницу к блоку графика
+        var card = document.getElementById("tab-dashboard");
+        if (card) window.scrollTo(0, card.offsetTop || 0);
+      };
+    }
+
+    if (weightClearBtn) {
+      weightClearBtn.onclick = function () {
+        if (!confirm("Стереть все точки графика веса?")) return;
+
+        weightHistory = [];
+        saveWeights(weightHistory);   // очистим в localStorage
+        renderWeightGraph();          // перерисуем пустой график
+      };
+    }
     };
 
     // ==== ВОДА ====
