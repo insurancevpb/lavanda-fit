@@ -105,6 +105,7 @@
       align-items: center;
       margin-bottom: 10px;
       gap: 10px;
+      flex-wrap: wrap;
     }
 
     .card-title { font-size: 15px; font-weight: 600; }
@@ -258,6 +259,7 @@
       align-items: baseline;
       gap: 10px;
       margin-bottom: 6px;
+      flex-wrap: wrap;
     }
     .weight-graph-title { font-size: 12px; color: var(--text-muted); }
     .weight-graph-value { font-size: 20px; font-weight: 600; color: var(--accent-soft); }
@@ -361,6 +363,34 @@
       font-size: 11px;
       color: var(--text-muted);
       padding: 4px 0;
+    }
+
+    /* Замеры (обхваты) */
+    .measure-note {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .measure-history-list {
+      margin-top: 8px;
+      max-height: 110px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+    .measure-history-item {
+      font-size: 11px;
+      padding: 3px 0;
+      border-bottom: 1px dashed rgba(129, 140, 248, 0.3);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .measure-history-item:last-child { border-bottom: none; }
+    .measure-date {
+      color: var(--text-muted);
+    }
+    .measure-values {
+      color: var(--accent-soft);
     }
 
     .tabs { margin-top: 12px; }
@@ -668,13 +698,6 @@
         box-shadow: 0 40px 80px rgba(15, 23, 42, 0.9);
       }
     }
-        .tab-tools {
-      display: flex;
-      justify-content: flex-end;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin: 0 0 8px;
-    }
   </style>
 </head>
 <body>
@@ -693,11 +716,7 @@
 
       <main class="tabs">
         <!-- Главная -->
-                <section class="tab active" id="tab-dashboard">
-          <div class="tab-tools">
-            <button class="btn-ghost btn-sm" id="dashboardEditBtn">Редактировать данные</button>
-            <button class="btn-ghost btn-sm" id="dashboardClearBtn">Стереть данные</button>
-          </div>
+        <section class="tab active" id="tab-dashboard">
           <!-- Профиль -->
           <div class="card">
             <div class="card-header">
@@ -745,7 +764,7 @@
             </div>
           </div>
 
-                    <!-- График веса -->
+          <!-- График веса -->
           <div class="card" style="margin-top:14px;">
             <div class="card-header">
               <div>
@@ -815,6 +834,49 @@
             </div>
           </div>
 
+          <!-- Ежедневные замеры (обхваты) -->
+          <div class="card" style="margin-top:14px;">
+            <div class="card-header">
+              <div>
+                <div class="card-title">Ежедневные замеры (см)</div>
+                <div class="card-subtitle">Отслеживай объёмы тела вместе с весом</div>
+              </div>
+            </div>
+            <div class="profile-grid">
+              <div class="field">
+                <label for="measureChest">Обхват груди, см</label>
+                <input id="measureChest" type="number" inputmode="decimal" placeholder="Например, 90" />
+              </div>
+              <div class="field">
+                <label for="measureWaist">Обхват талии, см</label>
+                <input id="measureWaist" type="number" inputmode="decimal" placeholder="Например, 70" />
+              </div>
+              <div class="field">
+                <label for="measureHips">Обхват бёдер, см</label>
+                <input id="measureHips" type="number" inputmode="decimal" placeholder="Например, 98" />
+              </div>
+              <div class="field">
+                <label for="measureThigh">Обхват бедра, см</label>
+                <input id="measureThigh" type="number" inputmode="decimal" placeholder="Например, 55" />
+              </div>
+              <div class="field">
+                <label for="measureCalf">Обхват икры, см</label>
+                <input id="measureCalf" type="number" inputmode="decimal" placeholder="Например, 35" />
+              </div>
+            </div>
+            <div class="measure-note">
+              Замер для даты: <span id="measureDateLabel">—</span>.  
+              Если сохранить несколько раз за день, данные для этого дня обновятся.
+            </div>
+            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-sm" id="measureSaveBtn">Сохранить замеры</button>
+              <button class="btn-ghost btn-sm" id="measureClearBtn">Стереть все замеры</button>
+            </div>
+            <div class="measure-history-list" id="measureHistoryList">
+              <div class="weight-history-empty">Пока нет замеров</div>
+            </div>
+          </div>
+
           <!-- Вода + калории -->
           <div class="card" style="margin-top:14px;">
             <div class="card-header">
@@ -861,11 +923,7 @@
         </section>
 
         <!-- Питание -->
-                <section class="tab" id="tab-meals">
-          <div class="tab-tools">
-            <button class="btn-ghost btn-sm" id="mealsEditBtn">Редактировать данные</button>
-            <button class="btn-ghost btn-sm" id="mealsClearBtn">Стереть данные</button>
-          </div>
+        <section class="tab" id="tab-meals">
           <div class="card">
             <div class="recipes-header">
               <div>
@@ -879,11 +937,7 @@
         </section>
 
         <!-- Микродвижения -->
-                <section class="tab" id="tab-micro">
-          <div class="tab-tools">
-            <button class="btn-ghost btn-sm" id="microEditBtn">Редактировать данные</button>
-            <button class="btn-ghost btn-sm" id="microClearBtn">Стереть данные</button>
-          </div>
+        <section class="tab" id="tab-micro">
           <div class="card">
             <div class="card-header">
               <div>
@@ -897,11 +951,7 @@
         </section>
 
         <!-- Дневник -->
-                <section class="tab" id="tab-diary">
-          <div class="tab-tools">
-            <button class="btn-ghost btn-sm" id="diaryEditBtn">Редактировать данные</button>
-            <button class="btn-ghost btn-sm" id="diaryClearBtn">Стереть данные</button>
-          </div>
+        <section class="tab" id="tab-diary">
           <div class="card">
             <div class="card-header">
               <div>
@@ -966,13 +1016,14 @@
   </div>
 
   <script>
-    // ==== ХРАНИЛИЩЕ (без падений) ====
+    // ==== ХРАНИЛИЩЕ ====
     var STORAGE_KEYS = {
       PROFILE: "lavanda_profile",
       WEIGHTS: "lavanda_weights",
       WATER: "lavanda_water",
       CALORIES: "lavanda_calories",
-      DIARY: "lavanda_diary"
+      DIARY: "lavanda_diary",
+      MEASURES: "lavanda_measures"
     };
 
     var storageAvailable = true;
@@ -987,7 +1038,6 @@
       if (!storageAvailable) return;
       try { window.localStorage.setItem(key, value); } catch (e) {}
     }
-
     function getStorage(key) {
       if (!storageAvailable) return null;
       try { return window.localStorage.getItem(key); } catch (e) { return null; }
@@ -1220,8 +1270,8 @@
     var MICRO_MOVES = [
       { title: "10 приседаний утром", meta: "1 минута, отлично разгоняет кровообращение." },
       { title: "Пройтись по комнате во время звонка", meta: "5–10 минут лёгкой активности." },
-      { title: "Стретчинг шеи и плеч", meta: "2 минуты, снимет напряжение от телефона и ноутбука." },
-      { title: "Подняться по лестнице пешком", meta: "Выбери 3–5 этажей, вместо лифта." },
+      { title: "Стретчинг шеи и плеч", meta: "2 минуты, снимет напряжение." },
+      { title: "Подняться по лестнице пешком", meta: "Выбери 3–5 этажей вместо лифта." },
       { title: "20 махов руками и шаги на месте", meta: "1–2 минуты, когда устала сидеть." },
       { title: "Лёгкая зарядка перед сном", meta: "3 минуты мягких наклонов и поворотов корпуса." },
       { title: "Стоять во время переписки", meta: "5 минут стоя вместо сидения." },
@@ -1243,7 +1293,7 @@
       return date + " • " + time;
     }
 
-    // ==== DOM ЭЛЕМЕНТЫ ====
+    // ==== DOM ====
     var tabButtons = document.querySelectorAll(".tab-btn");
     var tabs = document.querySelectorAll(".tab");
 
@@ -1254,16 +1304,7 @@
     var calorieTargetTextEl = document.getElementById("calorieTargetText");
     var caloriesTargetEl = document.getElementById("caloriesTarget");
     var waterTargetEl = document.getElementById("waterTarget");
-    var weightEditBtn = document.getElementById("weightEditBtn");
-    var weightClearBtn = document.getElementById("weightClearBtn");
-    var dashboardEditBtn = document.getElementById("dashboardEditBtn");
-    var dashboardClearBtn = document.getElementById("dashboardClearBtn");
-    var mealsEditBtn = document.getElementById("mealsEditBtn");
-    var mealsClearBtn = document.getElementById("mealsClearBtn");
-    var microEditBtn = document.getElementById("microEditBtn");
-    var microClearBtn = document.getElementById("microClearBtn");
-    var diaryEditBtn = document.getElementById("diaryEditBtn");
-    var diaryClearBtn = document.getElementById("diaryClearBtn");
+
     var weightGraphCanvasEl = document.getElementById("weightGraphCanvas");
     var weightEmptyEl = document.getElementById("weightEmptyText");
     var weightYAxisEl = document.getElementById("weightYAxis");
@@ -1276,6 +1317,18 @@
     var weightChangeValueEl = document.getElementById("weightChangeValue");
     var weightEntriesCountEl = document.getElementById("weightEntriesCount");
     var weightHistoryListEl = document.getElementById("weightHistoryList");
+    var weightEditBtn = document.getElementById("weightEditBtn");
+    var weightClearBtn = document.getElementById("weightClearBtn");
+
+    var measureChestEl = document.getElementById("measureChest");
+    var measureWaistEl = document.getElementById("measureWaist");
+    var measureHipsEl = document.getElementById("measureHips");
+    var measureThighEl = document.getElementById("measureThigh");
+    var measureCalfEl = document.getElementById("measureCalf");
+    var measureDateLabelEl = document.getElementById("measureDateLabel");
+    var measureSaveBtn = document.getElementById("measureSaveBtn");
+    var measureClearBtn = document.getElementById("measureClearBtn");
+    var measureHistoryListEl = document.getElementById("measureHistoryList");
 
     var waterCurrentEl = document.getElementById("waterCurrent");
     var waterProgressEl = document.getElementById("waterProgress");
@@ -1312,18 +1365,12 @@
       tabButtons[i].onclick = function () {
         var targetId = this.getAttribute("data-tab-target");
         for (var j = 0; j < tabButtons.length; j++) {
-          if (tabButtons[j] === this) {
-            tabButtons[j].classList.add("active");
-          } else {
-            tabButtons[j].classList.remove("active");
-          }
+          if (tabButtons[j] === this) tabButtons[j].classList.add("active");
+          else tabButtons[j].classList.remove("active");
         }
         for (var k = 0; k < tabs.length; k++) {
-          if (tabs[k].id === targetId) {
-            tabs[k].classList.add("active");
-          } else {
-            tabs[k].classList.remove("active");
-          }
+          if (tabs[k].id === targetId) tabs[k].classList.add("active");
+          else tabs[k].classList.remove("active");
         }
       };
     }
@@ -1333,8 +1380,7 @@
       var raw = getStorage(STORAGE_KEYS.PROFILE);
       if (!raw) return null;
       try {
-        var obj = JSON.parse(raw);
-        return obj;
+        return JSON.parse(raw);
       } catch (e) {
         return null;
       }
@@ -1401,11 +1447,8 @@
         var arr = JSON.parse(raw);
         if (Object.prototype.toString.call(arr) === "[object Array]") return arr;
         return [];
-      } catch (e) {
-        return [];
-      }
+      } catch (e) { return []; }
     }
-
     function saveWeights(list) {
       setStorage(STORAGE_KEYS.WEIGHTS, JSON.stringify(list));
     }
@@ -1538,30 +1581,130 @@
 
       weightEntryEl.value = "";
       renderWeightGraph();
-          // Кнопки в блоке "График веса"
+    };
+
     if (weightEditBtn) {
       weightEditBtn.onclick = function () {
-        // Подставляем последний вес в поле "Новый вес" и ставим туда курсор
         if (weightHistory && weightHistory.length) {
           var last = weightHistory[weightHistory.length - 1];
           weightEntryEl.value = String(last.value).replace(".", ",");
         }
         weightEntryEl.focus();
-        // Чуть прокрутим страницу к блоку графика
-        var card = document.getElementById("tab-dashboard");
-        if (card) window.scrollTo(0, card.offsetTop || 0);
+        window.scrollTo(0, weightGraphCanvasEl.getBoundingClientRect().top + window.pageYOffset - 60);
       };
     }
 
     if (weightClearBtn) {
       weightClearBtn.onclick = function () {
         if (!confirm("Стереть все точки графика веса?")) return;
-
         weightHistory = [];
-        saveWeights(weightHistory);   // очистим в localStorage
-        renderWeightGraph();          // перерисуем пустой график
+        saveWeights(weightHistory);
+        renderWeightGraph();
       };
     }
+
+    // ==== ЗАМЕРЫ (обхваты) ====
+    function loadMeasures() {
+      var raw = getStorage(STORAGE_KEYS.MEASURES);
+      if (!raw) return [];
+      try {
+        var arr = JSON.parse(raw);
+        if (Object.prototype.toString.call(arr) === "[object Array]") return arr;
+        return [];
+      } catch (e) { return []; }
+    }
+    function saveMeasures(list) {
+      setStorage(STORAGE_KEYS.MEASURES, JSON.stringify(list));
+    }
+
+    var measuresHistory = loadMeasures();
+
+    function renderMeasures() {
+      // подпись даты
+      var d = new Date();
+      var dateStr = d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+      measureDateLabelEl.innerHTML = dateStr;
+
+      // история
+      measureHistoryListEl.innerHTML = "";
+      if (!measuresHistory.length) {
+        measureHistoryListEl.innerHTML = '<div class="weight-history-empty">Пока нет замеров</div>';
+      } else {
+        var sorted = measuresHistory.slice().sort(function (a, b) {
+          return new Date(b.date) - new Date(a.date);
+        });
+        for (var i = 0; i < sorted.length; i++) {
+          var e = sorted[i];
+          var dd = new Date(e.date);
+          var dstr = dd.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+          var item = document.createElement("div");
+          item.className = "measure-history-item";
+          item.innerHTML =
+            '<div class="measure-date">' + dstr + '</div>' +
+            '<div class="measure-values">' +
+            'Г: ' + (e.chest || "—") +
+            ' • Т: ' + (e.waist || "—") +
+            ' • Б: ' + (e.hips || "—") +
+            ' • Бедро: ' + (e.thigh || "—") +
+            ' • Икра: ' + (e.calf || "—") +
+            '</div>';
+          measureHistoryListEl.appendChild(item);
+        }
+
+        // подставим последние значения в поля
+        var last = sorted[0];
+        measureChestEl.value = last.chest || "";
+        measureWaistEl.value = last.waist || "";
+        measureHipsEl.value = last.hips || "";
+        measureThighEl.value = last.thigh || "";
+        measureCalfEl.value = last.calf || "";
+      }
+    }
+
+    measureSaveBtn.onclick = function () {
+      var chest = measureChestEl.value.trim();
+      var waist = measureWaistEl.value.trim();
+      var hips  = measureHipsEl.value.trim();
+      var thigh = measureThighEl.value.trim();
+      var calf  = measureCalfEl.value.trim();
+
+      if (!chest && !waist && !hips && !thigh && !calf) return; // ничего не ввели
+
+      var today = todayKey();
+      var found = -1;
+      for (var i = 0; i < measuresHistory.length; i++) {
+        if (measuresHistory[i].dateKey === today) {
+          found = i; break;
+        }
+      }
+
+      var entry = {
+        date: new Date().toISOString(),
+        dateKey: today,
+        chest: chest ? Number(chest.replace(",", ".")) : null,
+        waist: waist ? Number(waist.replace(",", ".")) : null,
+        hips:  hips  ? Number(hips.replace(",", "."))  : null,
+        thigh: thigh ? Number(thigh.replace(",", ".")) : null,
+        calf:  calf  ? Number(calf.replace(",", "."))  : null
+      };
+
+      if (found >= 0) measuresHistory[found] = entry;
+      else measuresHistory.push(entry);
+
+      saveMeasures(measuresHistory);
+      renderMeasures();
+    };
+
+    measureClearBtn.onclick = function () {
+      if (!confirm("Стереть все замеры обхватов?")) return;
+      measuresHistory = [];
+      saveMeasures(measuresHistory);
+      measureChestEl.value = "";
+      measureWaistEl.value = "";
+      measureHipsEl.value = "";
+      measureThighEl.value = "";
+      measureCalfEl.value = "";
+      renderMeasures();
     };
 
     // ==== ВОДА ====
@@ -1597,7 +1740,6 @@
       saveWater(waterState);
       syncWaterProgress();
     };
-
     waterMinusBtn.onclick = function () {
       waterState.value = Math.max(0, (waterState.value || 0) - 100);
       waterState.date = todayKey();
@@ -1686,7 +1828,6 @@
 
       recipeModalEl.classList.add("active");
     }
-
     function closeRecipeModal() {
       recipeModalEl.classList.remove("active");
     }
@@ -1718,9 +1859,7 @@
             '<span>У: ' + r.carbs + ' г</span>' +
           '</div>';
         card.recipeData = r;
-        card.onclick = function () {
-          openRecipeModal(this.recipeData);
-        };
+        card.onclick = function () { openRecipeModal(this.recipeData); };
         recipesListEl.appendChild(card);
       }
     }
@@ -1752,9 +1891,8 @@
             '<div class="micro-meta">' + m.meta + '</div>' +
           '</div>' +
           '<button class="micro-done-toggle">Выполнено</button>';
-        var btn = card.querySelector(".micro-done-toggle");
-        btn.onclick = (function (button) {
-          return function () {
+        (function (button) {
+          button.onclick = function () {
             if (button.classList.contains("done")) {
               button.classList.remove("done");
               button.innerHTML = "Выполнено";
@@ -1763,7 +1901,7 @@
               button.innerHTML = "Готово";
             }
           };
-        })(btn);
+        })(card.querySelector(".micro-done-toggle"));
         microListEl.appendChild(card);
       }
     }
@@ -1778,9 +1916,7 @@
         var arr = JSON.parse(raw);
         if (Object.prototype.toString.call(arr) === "[object Array]") return arr;
         return [];
-      } catch (e) {
-        return [];
-      }
+      } catch (e) { return []; }
     }
     function saveDiary(entries) {
       setStorage(STORAGE_KEYS.DIARY, JSON.stringify(entries));
@@ -1826,85 +1962,8 @@
     };
 
     // ==== ИНИЦИАЛИЗАЦИЯ ====
-       // ==== КНОПКИ "РЕДАКТИРОВАТЬ" / "СТЕРЕТЬ" НА ВКЛАДКАХ ====
-
-    // Главная: редактировать = фокус на вес, стереть = сброс профиля, веса, воды и калорий
-    if (dashboardEditBtn) {
-      dashboardEditBtn.onclick = function () {
-        weightEl.focus();
-        window.scrollTo(0, 0);
-      };
-    }
-
-    if (dashboardClearBtn) {
-      dashboardClearBtn.onclick = function () {
-        if (!confirm("Очистить профиль, график веса, воду и калории?")) return;
-
-        if (storageAvailable) {
-          try {
-            localStorage.removeItem(STORAGE_KEYS.PROFILE);
-            localStorage.removeItem(STORAGE_KEYS.WEIGHTS);
-            localStorage.removeItem(STORAGE_KEYS.WATER);
-            localStorage.removeItem(STORAGE_KEYS.CALORIES);
-          } catch (e) {}
-        }
-
-        genderEl.value = "female";
-        activityEl.value = "1.2";
-        heightEl.value = "";
-        weightEl.value = "";
-
-        weightHistory = [];
-        waterState = { date: todayKey(), value: 0 };
-        caloriesState = { date: todayKey(), value: 0 };
-
-        updateProfileFromUI(false);
-        renderWeightGraph();
-        syncWaterProgress();
-        syncCaloriesProgress();
-      };
-    }
-
-    // Питание: редактировать = сгенерировать новые рецепты, стереть = убрать список
-    if (mealsEditBtn) {
-      mealsEditBtn.onclick = function () {
-        renderRecipes();
-      };
-    }
-    if (mealsClearBtn) {
-      mealsClearBtn.onclick = function () {
-        recipesListEl.innerHTML = "";
-      };
-    }
-
-    // Микродвижения: редактировать = обновить список, стереть = очистить
-    if (microEditBtn) {
-      microEditBtn.onclick = function () {
-        renderMicroMoves();
-      };
-    }
-    if (microClearBtn) {
-      microClearBtn.onclick = function () {
-        microListEl.innerHTML = "";
-      };
-    }
-
-    // Дневник: редактировать = фокус на поле ввода, стереть = удалить все записи
-    if (diaryEditBtn) {
-      diaryEditBtn.onclick = function () {
-        diaryTitleInputEl.focus();
-        window.scrollTo(0, document.getElementById("tab-diary").offsetTop || 0);
-      };
-    }
-    if (diaryClearBtn) {
-      diaryClearBtn.onclick = function () {
-        if (!confirm("Удалить все записи дневника?")) return;
-        diaryEntries = [];
-        saveDiary(diaryEntries);
-        renderDiary();
-      };
-    }
     renderWeightGraph();
+    renderMeasures();
     syncWaterProgress();
     syncCaloriesProgress();
     renderRecipes();
