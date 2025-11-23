@@ -681,6 +681,40 @@
       background: transparent;
     }
 
+    /* Вкладки главной */
+    .subtabs {
+      display:flex;
+      gap:6px;
+      margin:8px 0 10px;
+    }
+    .subtab-btn {
+      flex:1;
+      border:none;
+      border-radius:999px;
+      padding:6px 8px;
+      font-size:11px;
+      color:var(--text-muted);
+      background:rgba(24,16,63,0.85);
+      border:1px solid rgba(148,131,244,0.6);
+    }
+    .subtab-btn.active {
+      color:var(--accent-contrast);
+      background:linear-gradient(120deg,#a855f7,#f472b6);
+      border-color:rgba(243,232,255,0.9);
+      box-shadow:0 6px 18px rgba(129,90,213,0.9);
+    }
+    .subtab { display:none; }
+    .subtab.active { display:block; animation:fadeIn 0.22s ease-out; }
+
+    .tabs { margin-top: 12px; }
+    .tab { display: none; }
+    .tab.active { display: block; animation: fadeIn 0.22s ease-out; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
     @media (min-width: 520px) {
       body { padding: 16px 0; }
       .app-shell {
@@ -708,210 +742,225 @@
       <main class="tabs">
         <!-- Главная -->
         <section class="tab active" id="tab-dashboard">
-          <!-- Профиль -->
-          <div class="card">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Твои параметры</div>
-                <div class="card-subtitle">Под них подстроим воду и калории</div>
-              </div>
-              <span class="inline-pill">
-                <span style="width:8px;height:8px;border-radius:999px;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.8);"></span>
-                <span>Прогресс активен</span>
-              </span>
-            </div>
-            <div class="profile-grid">
-              <div class="field">
-                <label for="gender">Пол</label>
-                <select id="gender">
-                  <option value="female">Женский</option>
-                  <option value="male">Мужской</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="activity">Активность</label>
-                <select id="activity">
-                  <option value="1.2">Минимальная</option>
-                  <option value="1.375">Лёгкая</option>
-                  <option value="1.55">Средняя</option>
-                  <option value="1.725">Высокая</option>
-                </select>
-              </div>
-              <div class="field">
-                <label for="height">Рост, см</label>
-                <input id="height" type="number" inputmode="decimal" placeholder="например, 165" />
-              </div>
-              <div class="field">
-                <label for="weight">Вес, кг</label>
-                <input id="weight" type="number" inputmode="decimal" placeholder="например, 68" />
-              </div>
-            </div>
-            <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-              <span class="card-subtitle">Рекомендуемая калорийность</span>
-              <span class="inline-pill">
-                <span>≈</span>
-                <strong id="calorieTargetText">— ккал/день</strong>
-              </span>
-            </div>
+          <!-- Внутренние вкладки главной -->
+          <div class="subtabs">
+            <button class="subtab-btn active" data-subtab="subtab-main">Вес</button>
+            <button class="subtab-btn" data-subtab="subtab-measures">Замеры</button>
+            <button class="subtab-btn" data-subtab="subtab-water">Вода и калории</button>
           </div>
 
-          <!-- График веса -->
-          <div class="card" style="margin-top:14px;">
-            <div class="card-header">
-              <div>
-                <div class="card-title">График веса</div>
-                <div class="card-subtitle">Слева — кривая по датам, справа — цифры и история</div>
-              </div>
-              <div style="display:flex;gap:6px;flex-wrap:wrap;">
-                <button class="btn-ghost btn-sm" id="weightEditBtn">Редактировать</button>
-                <button class="btn-ghost btn-sm" id="weightClearBtn">Стереть график</button>
-              </div>
-            </div>
-            <div class="weight-graph">
-              <div class="weight-layout">
-                <div class="weight-graph-panel">
-                  <div class="weight-graph-header">
-                    <div class="weight-graph-title">Текущий вес</div>
-                    <div class="weight-graph-value" id="currentWeightDisplay">
-                      — <span>кг</span>
-                    </div>
-                  </div>
-                  <div class="weight-chart">
-                    <div class="weight-y-axis" id="weightYAxis"></div>
-                    <div class="weight-chart-main">
-                      <div id="weightGraphCanvas" class="weight-graph-canvas">
-                        <div class="weight-empty" id="weightEmptyText">
-                          Добавь первое измерение, и появится кривая изменения веса
-                        </div>
-                      </div>
-                      <div class="weight-x-axis" id="weightXAxis"></div>
-                    </div>
-                  </div>
+          <!-- Страница: Вес -->
+          <div class="subtab active" id="subtab-main">
+            <!-- Профиль -->
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Твои параметры</div>
+                  <div class="card-subtitle">Под них подстроим воду и калории</div>
                 </div>
-                <div class="weight-data-panel">
-                  <div class="weight-data-title">Данные</div>
-                  <div class="weight-stats">
-                    <div>
-                      <div class="weight-stat-label">Стартовый вес</div>
-                      <div class="weight-stat-value" id="weightStartValue">— кг</div>
-                    </div>
-                    <div>
-                      <div class="weight-stat-label">Текущий вес</div>
-                      <div class="weight-stat-value" id="weightCurrentValue">— кг</div>
-                    </div>
-                    <div>
-                      <div class="weight-stat-label">Изменение</div>
-                      <div class="weight-stat-value" id="weightChangeValue">— кг</div>
-                    </div>
-                    <div>
-                      <div class="weight-stat-label">Измерений</div>
-                      <div class="weight-stat-value" id="weightEntriesCount">0</div>
-                    </div>
-                  </div>
-                  <div class="weight-history-title">История</div>
-                  <div class="weight-history-list" id="weightHistoryList">
-                    <div class="weight-history-empty">Пока нет записей</div>
-                  </div>
-                </div>
+                <span class="inline-pill">
+                  <span style="width:8px;height:8px;border-radius:999px;background:#22c55e;box-shadow:0 0 8px rgba(34,197,94,0.8);"></span>
+                  <span>Прогресс активен</span>
+                </span>
               </div>
-
-              <div class="weight-actions">
+              <div class="profile-grid">
                 <div class="field">
-                  <label for="weightEntry">Новый вес, кг</label>
-                  <input id="weightEntry" type="number" inputmode="decimal" placeholder="Например, 67.4" />
+                  <label for="gender">Пол</label>
+                  <select id="gender">
+                    <option value="female">Женский</option>
+                    <option value="male">Мужской</option>
+                  </select>
                 </div>
-                <button class="btn btn-sm" id="addWeightEntryBtn">В график</button>
+                <div class="field">
+                  <label for="activity">Активность</label>
+                  <select id="activity">
+                    <option value="1.2">Минимальная</option>
+                    <option value="1.375">Лёгкая</option>
+                    <option value="1.55">Средняя</option>
+                    <option value="1.725">Высокая</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="height">Рост, см</label>
+                  <input id="height" type="number" inputmode="decimal" placeholder="например, 165" />
+                </div>
+                <div class="field">
+                  <label for="weight">Вес, кг</label>
+                  <input id="weight" type="number" inputmode="decimal" placeholder="например, 68" />
+                </div>
+              </div>
+              <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+                <span class="card-subtitle">Рекомендуемая калорийность</span>
+                <span class="inline-pill">
+                  <span>≈</span>
+                  <strong id="calorieTargetText">— ккал/день</strong>
+                </span>
+              </div>
+            </div>
+
+            <!-- График веса -->
+            <div class="card" style="margin-top:14px;">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">График веса</div>
+                  <div class="card-subtitle">Кривая изменения веса по датам</div>
+                </div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                  <button class="btn-ghost btn-sm" id="weightEditBtn">Редактировать</button>
+                  <button class="btn-ghost btn-sm" id="weightClearBtn">Стереть график</button>
+                </div>
+              </div>
+              <div class="weight-graph">
+                <div class="weight-layout">
+                  <div class="weight-graph-panel">
+                    <div class="weight-graph-header">
+                      <div class="weight-graph-title">Текущий вес</div>
+                      <div class="weight-graph-value" id="currentWeightDisplay">
+                        — <span>кг</span>
+                      </div>
+                    </div>
+                    <div class="weight-chart">
+                      <div class="weight-y-axis" id="weightYAxis"></div>
+                      <div class="weight-chart-main">
+                        <div id="weightGraphCanvas" class="weight-graph-canvas">
+                          <div class="weight-empty" id="weightEmptyText">
+                            Добавь первое измерение, и появится кривая изменения веса
+                          </div>
+                        </div>
+                        <div class="weight-x-axis" id="weightXAxis"></div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="weight-data-panel">
+                    <div class="weight-data-title">Данные</div>
+                    <div class="weight-stats">
+                      <div>
+                        <div class="weight-stat-label">Стартовый вес</div>
+                        <div class="weight-stat-value" id="weightStartValue">— кг</div>
+                      </div>
+                      <div>
+                        <div class="weight-stat-label">Текущий вес</div>
+                        <div class="weight-stat-value" id="weightCurrentValue">— кг</div>
+                      </div>
+                      <div>
+                        <div class="weight-stat-label">Изменение</div>
+                        <div class="weight-stat-value" id="weightChangeValue">— кг</div>
+                      </div>
+                      <div>
+                        <div class="weight-stat-label">Измерений</div>
+                        <div class="weight-stat-value" id="weightEntriesCount">0</div>
+                      </div>
+                    </div>
+                    <div class="weight-history-title">История</div>
+                    <div class="weight-history-list" id="weightHistoryList">
+                      <div class="weight-history-empty">Пока нет записей</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="weight-actions">
+                  <div class="field">
+                    <label for="weightEntry">Новый вес, кг</label>
+                    <input id="weightEntry" type="number" inputmode="decimal" placeholder="Например, 67.4" />
+                  </div>
+                  <button class="btn btn-sm" id="addWeightEntryBtn">В график</button>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Ежедневные замеры (обхваты) -->
-          <div class="card" style="margin-top:14px;">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Ежедневные замеры (см)</div>
-                <div class="card-subtitle">Отслеживай объёмы тела вместе с весом</div>
+          <!-- Страница: Замеры -->
+          <div class="subtab" id="subtab-measures">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Ежедневные замеры (см)</div>
+                  <div class="card-subtitle">Обхваты тела по дням</div>
+                </div>
               </div>
-            </div>
-            <div class="profile-grid">
-              <div class="field">
-                <label for="measureChest">Обхват груди, см</label>
-                <input id="measureChest" type="number" inputmode="decimal" placeholder="Например, 90" />
+              <div class="profile-grid">
+                <div class="field">
+                  <label for="measureChest">Обхват груди, см</label>
+                  <input id="measureChest" type="number" inputmode="decimal" placeholder="Например, 90" />
+                </div>
+                <div class="field">
+                  <label for="measureWaist">Обхват талии, см</label>
+                  <input id="measureWaist" type="number" inputmode="decimal" placeholder="Например, 70" />
+                </div>
+                <div class="field">
+                  <label for="measureHips">Обхват бёдер, см</label>
+                  <input id="measureHips" type="number" inputmode="decimal" placeholder="Например, 98" />
+                </div>
+                <div class="field">
+                  <label for="measureThigh">Обхват бедра, см</label>
+                  <input id="measureThigh" type="number" inputmode="decimal" placeholder="Например, 55" />
+                </div>
+                <div class="field">
+                  <label for="measureCalf">Обхват икры, см</label>
+                  <input id="measureCalf" type="number" inputmode="decimal" placeholder="Например, 35" />
+                </div>
               </div>
-              <div class="field">
-                <label for="measureWaist">Обхват талии, см</label>
-                <input id="measureWaist" type="number" inputmode="decimal" placeholder="Например, 70" />
+              <div class="measure-note">
+                Замер для даты: <span id="measureDateLabel">—</span>.
+                Если сохранить несколько раз, замер за этот день обновится.
               </div>
-              <div class="field">
-                <label for="measureHips">Обхват бёдер, см</label>
-                <input id="measureHips" type="number" inputmode="decimal" placeholder="Например, 98" />
+              <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
+                <button class="btn btn-sm" id="measureSaveBtn">Сохранить замеры</button>
+                <button class="btn-ghost btn-sm" id="measureClearBtn">Стереть замеры за сегодня</button>
               </div>
-              <div class="field">
-                <label for="measureThigh">Обхват бедра, см</label>
-                <input id="measureThigh" type="number" inputmode="decimal" placeholder="Например, 55" />
+              <div class="measure-history-list" id="measureHistoryList">
+                <div class="weight-history-empty">Пока нет замеров</div>
               </div>
-              <div class="field">
-                <label for="measureCalf">Обхват икры, см</label>
-                <input id="measureCalf" type="number" inputmode="decimal" placeholder="Например, 35" />
-              </div>
-            </div>
-            <div class="measure-note">
-              Замер для даты: <span id="measureDateLabel">—</span>. Если сохранить несколько раз за день,
-              данные для этого дня обновятся.
-            </div>
-            <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn btn-sm" id="measureSaveBtn">Сохранить замеры</button>
-              <button class="btn-ghost btn-sm" id="measureClearBtn">Стереть замеры за сегодня</button>
-            </div>
-            <div class="measure-history-list" id="measureHistoryList">
-              <div class="weight-history-empty">Пока нет замеров</div>
             </div>
           </div>
 
-          <!-- Вода + калории -->
-          <div class="card" style="margin-top:14px;">
-            <div class="card-header">
-              <div>
-                <div class="card-title">Вода и калории</div>
-                <div class="card-subtitle">Маленькие шаги — большой результат</div>
-              </div>
-            </div>
-            <div class="progress-row">
-              <div>
-                <div class="progress-label">Вода за сегодня</div>
-                <div class="progress-value">
-                  <span id="waterCurrent">0</span>/<span id="waterTarget">2000</span> мл
+          <!-- Страница: Вода и калории -->
+          <div class="subtab" id="subtab-water">
+            <div class="card">
+              <div class="card-header">
+                <div>
+                  <div class="card-title">Вода и калории</div>
+                  <div class="card-subtitle">Маленькие шаги — большой результат</div>
                 </div>
               </div>
-              <div class="progress">
-                <div id="waterProgress" class="progress-fill"></div>
-              </div>
-            </div>
-            <div style="display:flex;gap:6px;margin-top:6px;">
-              <button class="btn-ghost btn-sm" id="waterMinusBtn">–100 мл</button>
-              <button class="btn btn-sm" id="waterPlusBtn">+100 мл</button>
-            </div>
 
-            <hr style="margin:10px 0;border:none;border-top:1px dashed rgba(129, 140, 248, 0.35);" />
-
-            <div class="progress-row">
-              <div>
-                <div class="progress-label">Калории за сегодня</div>
-                <div class="progress-value">
-                  <span id="caloriesCurrent">0</span>/<span id="caloriesTarget">—</span> ккал
+              <div class="progress-row">
+                <div>
+                  <div class="progress-label">Вода за сегодня</div>
+                  <div class="progress-value">
+                    <span id="waterCurrent">0</span>/<span id="waterTarget">2000</span> мл
+                  </div>
+                </div>
+                <div class="progress">
+                  <div id="waterProgress" class="progress-fill"></div>
                 </div>
               </div>
-              <div class="progress">
-                <div id="caloriesProgress" class="progress-fill"></div>
+              <div style="display:flex;gap:6px;margin-top:6px;">
+                <button class="btn-ghost btn-sm" id="waterMinusBtn">–100 мл</button>
+                <button class="btn btn-sm" id="waterPlusBtn">+100 мл</button>
               </div>
-            </div>
-            <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
-              <input id="caloriesInput" type="number" inputmode="decimal" placeholder="+ ккал"
-                     style="flex:1;background:rgba(20,12,46,0.95);border-radius:999px;border:1px solid rgba(148,131,244,0.7);padding:5px 10px;font-size:12px;color:var(--text-main);" />
-              <button class="btn btn-sm" id="caloriesAddBtn">Добавить</button>
-            </div>
-            <div style="margin-top:6px;display:flex;justify-content:flex-end;">
-              <button class="btn-ghost btn-sm" id="caloriesResetBtn">Сброс</button>
+
+              <hr style="margin:10px 0;border:none;border-top:1px dashed rgba(129, 140, 248, 0.35);" />
+
+              <div class="progress-row">
+                <div>
+                  <div class="progress-label">Калории за сегодня</div>
+                  <div class="progress-value">
+                    <span id="caloriesCurrent">0</span>/<span id="caloriesTarget">—</span> ккал
+                  </div>
+                </div>
+                <div class="progress">
+                  <div id="caloriesProgress" class="progress-fill"></div>
+                </div>
+              </div>
+              <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
+                <input id="caloriesInput" type="number" inputmode="decimal" placeholder="+ ккал"
+                       style="flex:1;background:rgba(20,12,46,0.95);border-radius:999px;border:1px solid rgba(148,131,244,0.7);padding:5px 10px;font-size:12px;color:var(--text-main);" />
+                <button class="btn btn-sm" id="caloriesAddBtn">Добавить</button>
+              </div>
+              <div style="margin-top:6px;display:flex;justify-content:flex-end;">
+                <button class="btn-ghost btn-sm" id="caloriesResetBtn">Сброс</button>
+              </div>
             </div>
           </div>
         </section>
@@ -1290,6 +1339,8 @@
     // ==== DOM ====
     var tabButtons = document.querySelectorAll(".tab-btn");
     var tabs = document.querySelectorAll(".tab");
+    var subtabButtons = document.querySelectorAll(".subtab-btn");
+    var subtabs = document.querySelectorAll(".subtab");
 
     var genderEl = document.getElementById("gender");
     var activityEl = document.getElementById("activity");
@@ -1354,7 +1405,7 @@
     var diarySaveBtn = document.getElementById("diarySaveBtn");
     var diaryListEl = document.getElementById("diaryList");
 
-    // ==== ТАБЫ ====
+    // ==== ТАБЫ (главные) ====
     for (var i = 0; i < tabButtons.length; i++) {
       tabButtons[i].onclick = function () {
         var targetId = this.getAttribute("data-tab-target");
@@ -1365,6 +1416,21 @@
         for (var k = 0; k < tabs.length; k++) {
           if (tabs[k].id === targetId) tabs[k].classList.add("active");
           else tabs[k].classList.remove("active");
+        }
+      };
+    }
+
+    // ==== ВНУТРЕННИЕ ТАБЫ (Главная) ====
+    for (var st = 0; st < subtabButtons.length; st++) {
+      subtabButtons[st].onclick = function () {
+        var id = this.getAttribute("data-subtab");
+        for (var i = 0; i < subtabButtons.length; i++) {
+          if (subtabButtons[i] === this) subtabButtons[i].classList.add("active");
+          else subtabButtons[i].classList.remove("active");
+        }
+        for (var j = 0; j < subtabs.length; j++) {
+          if (subtabs[j].id === id) subtabs[j].classList.add("active");
+          else subtabs[j].classList.remove("active");
         }
       };
     }
