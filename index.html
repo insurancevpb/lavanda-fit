@@ -393,15 +393,6 @@
       color: var(--accent-soft);
     }
 
-    .tabs { margin-top: 12px; }
-    .tab { display: none; }
-    .tab.active { display: block; animation: fadeIn 0.22s ease-out; }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
     .recipes-header {
       display: flex;
       justify-content: space-between;
@@ -865,13 +856,13 @@
               </div>
             </div>
             <div class="measure-note">
-              Замер для даты: <span id="measureDateLabel">—</span>.  
-              Если сохранить несколько раз за день, данные для этого дня обновятся.
+              Замер для даты: <span id="measureDateLabel">—</span>. Если сохранить несколько раз за день,
+              данные для этого дня обновятся.
             </div>
             <div style="margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;">
-  <button class="btn btn-sm" id="measureSaveBtn">Сохранить замеры</button>
-  <button class="btn-ghost btn-sm" id="measureClearBtn">Стереть замеры за сегодня</button>
-</div>
+              <button class="btn btn-sm" id="measureSaveBtn">Сохранить замеры</button>
+              <button class="btn-ghost btn-sm" id="measureClearBtn">Стереть замеры за сегодня</button>
+            </div>
             <div class="measure-history-list" id="measureHistoryList">
               <div class="weight-history-empty">Пока нет замеров</div>
             </div>
@@ -915,106 +906,31 @@
               </div>
             </div>
             <div style="display:flex;gap:6px;margin-top:6px;align-items:center;">
-  <input id="caloriesInput" type="number" inputmode="decimal" placeholder="+ ккал"
-         style="flex:1;background:rgba(20,12,46,0.95);border-radius:999px;
-                border:1px solid rgba(148,131,244,0.7);padding:5px 10px;
-                font-size:12px;color:var(--text-main);" />
-  <button class="btn btn-sm" id="caloriesAddBtn">Добавить</button>
-</div>
-<div style="margin-top:6px;display:flex;justify-content:flex-end;">
-  <button class="btn-ghost btn-sm" id="caloriesResetBtn">Сброс</button>
-</div>
+              <input id="caloriesInput" type="number" inputmode="decimal" placeholder="+ ккал"
+                     style="flex:1;background:rgba(20,12,46,0.95);border-radius:999px;border:1px solid rgba(148,131,244,0.7);padding:5px 10px;font-size:12px;color:var(--text-main);" />
+              <button class="btn btn-sm" id="caloriesAddBtn">Добавить</button>
+            </div>
+            <div style="margin-top:6px;display:flex;justify-content:flex-end;">
+              <button class="btn-ghost btn-sm" id="caloriesResetBtn">Сброс</button>
+            </div>
           </div>
         </section>
 
-           // ==== РЕЦЕПТЫ ====
-    function openRecipeModal(recipe) {
-      modalRecipeTitleEl.innerHTML = recipe.title;
-      modalRecipeTypeKcalEl.innerHTML = recipe.type + " • " + recipe.kcal + " ккал";
-      modalRecipeMacrosEl.innerHTML =
-        "Б: " + recipe.protein + " г • Ж: " + recipe.fat + " г • У: " + recipe.carbs + " г";
+        <!-- Питание -->
+        <section class="tab" id="tab-meals">
+          <div class="card">
+            <div class="recipes-header">
+              <div>
+                <div class="card-title">Идеи ПП‑приёмов пищи</div>
+                <div class="recipes-note">Нажми на блюдо — откроется рецепт и граммовки</div>
+              </div>
+              <button class="btn btn-sm" id="recipesRefreshBtn">Ещё идеи</button>
+            </div>
+            <div id="recipesList" class="recipes-list"></div>
+          </div>
+        </section>
 
-      modalIngredientsListEl.innerHTML = "";
-      for (var i = 0; i < recipe.ingredients.length; i++) {
-        var ing = recipe.ingredients[i];
-        var li = document.createElement("li");
-        li.innerHTML = ing.name + " — " + ing.amount + " " + ing.unit;
-        modalIngredientsListEl.appendChild(li);
-      }
-
-      modalStepsListEl.innerHTML = "";
-      for (var j = 0; j < recipe.steps.length; j++) {
-        var st = recipe.steps[j];
-        var li2 = document.createElement("li");
-        li2.innerHTML = st;
-        modalStepsListEl.appendChild(li2);
-      }
-
-      recipeModalEl.classList.add("active");
-    }
-
-    function closeRecipeModal() {
-      recipeModalEl.classList.remove("active");
-    }
-
-    modalCloseBtn.onclick = closeRecipeModal;
-    recipeModalEl.onclick = function (e) {
-      if (e.target === recipeModalEl ||
-          (e.target && e.target.classList && e.target.classList.contains("modal-backdrop"))) {
-        closeRecipeModal();
-      }
-    };
-
-    // одна случайная запись из массива RECIPES
-    function getRandomRecipe() {
-      var idx = Math.floor(Math.random() * RECIPES.length);
-      return RECIPES[idx];
-    }
-
-    // создание карточки рецепта
-    function createRecipeCard(r) {
-      var card = document.createElement("article");
-      card.className = "recipe-card";
-      card.innerHTML =
-        '<div class="recipe-type">' + r.type + "</div>" +
-        '<div class="recipe-title">' + r.title + "</div>" +
-        '<div class="recipe-meta">' +
-          "<span>" + r.kcal + " ккал</span>" +
-          '<span class="recipe-tag">' + (r.tag || "Полезное ПП") + "</span>" +
-        "</div>" +
-        '<div class="recipe-macros">' +
-          "<span>Б: " + r.protein + " г</span>" +
-          "<span>Ж: " + r.fat + " г</span>" +
-          "<span>У: " + r.carbs + " г</span>" +
-        "</div>";
-
-      card.recipeData = r;
-      card.onclick = function () {
-        openRecipeModal(card.recipeData);
-      };
-      return card;
-    }
-
-    // сколько рецептов добавляем за один раз
-    var recipesBatchSize = 4;
-
-    // append = true -> добавляем, false/undefined -> очищаем и создаём заново
-    function renderRecipes(append) {
-      if (!append) {
-        recipesListEl.innerHTML = "";
-      }
-      for (var i = 0; i < recipesBatchSize; i++) {
-        var r = getRandomRecipe();
-        var card = createRecipeCard(r);
-        recipesListEl.appendChild(card);
-      }
-    }
-
-    // кнопка "Ещё идеи" — бесконечно добавляем новые рецепты
-    recipesRefreshBtn.onclick = function () {
-      renderRecipes(true);
-    };
-    // ==== МИКРОДВИЖЕНИЯ ====
+        <!-- Микродвижения -->
         <section class="tab" id="tab-micro">
           <div class="card">
             <div class="card-header">
@@ -1457,11 +1373,7 @@
     function loadProfile() {
       var raw = getStorage(STORAGE_KEYS.PROFILE);
       if (!raw) return null;
-      try {
-        return JSON.parse(raw);
-      } catch (e) {
-        return null;
-      }
+      try { return JSON.parse(raw); } catch (e) { return null; }
     }
 
     function saveProfile(profile) {
@@ -1681,7 +1593,7 @@
       };
     }
 
-    // ==== ЗАМЕРЫ (обхваты) ====
+    // ==== ЗАМЕРЫ ====
     function loadMeasures() {
       var raw = getStorage(STORAGE_KEYS.MEASURES);
       if (!raw) return [];
@@ -1698,12 +1610,10 @@
     var measuresHistory = loadMeasures();
 
     function renderMeasures() {
-      // подпись даты
       var d = new Date();
       var dateStr = d.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
       measureDateLabelEl.innerHTML = dateStr;
 
-      // история
       measureHistoryListEl.innerHTML = "";
       if (!measuresHistory.length) {
         measureHistoryListEl.innerHTML = '<div class="weight-history-empty">Пока нет замеров</div>';
@@ -1729,7 +1639,6 @@
           measureHistoryListEl.appendChild(item);
         }
 
-        // подставим последние значения в поля
         var last = sorted[0];
         measureChestEl.value = last.chest || "";
         measureWaistEl.value = last.waist || "";
@@ -1746,7 +1655,7 @@
       var thigh = measureThighEl.value.trim();
       var calf  = measureCalfEl.value.trim();
 
-      if (!chest && !waist && !hips && !thigh && !calf) return; // ничего не ввели
+      if (!chest && !waist && !hips && !thigh && !calf) return;
 
       var today = todayKey();
       var found = -1;
@@ -1773,12 +1682,11 @@
       renderMeasures();
     };
 
-        measureClearBtn.onclick = function () {
+    measureClearBtn.onclick = function () {
       var today = todayKey();
       var newList = [];
       var hasToday = false;
 
-      // отделяем замеры за сегодня от остальных
       for (var i = 0; i < measuresHistory.length; i++) {
         if (measuresHistory[i].dateKey === today) {
           hasToday = true;
@@ -1797,7 +1705,6 @@
       measuresHistory = newList;
       saveMeasures(measuresHistory);
 
-      // чистим поля ввода (они относятся к сегодняшнему дню)
       measureChestEl.value = "";
       measureWaistEl.value = "";
       measureHipsEl.value = "";
@@ -1815,9 +1722,7 @@
         var obj = JSON.parse(raw);
         if (!obj.date || obj.date !== todayKey()) return { date: todayKey(), value: 0 };
         return obj;
-      } catch (e) {
-        return { date: todayKey(), value: 0 };
-      }
+      } catch (e) { return { date: todayKey(), value: 0 }; }
     }
     function saveWater(state) {
       setStorage(STORAGE_KEYS.WATER, JSON.stringify(state));
@@ -1855,9 +1760,7 @@
         var obj = JSON.parse(raw);
         if (!obj.date || obj.date !== todayKey()) return { date: todayKey(), value: 0 };
         return obj;
-      } catch (e) {
-        return { date: todayKey(), value: 0 };
-      }
+      } catch (e) { return { date: todayKey(), value: 0 }; }
     }
     function saveCalories(state) {
       setStorage(STORAGE_KEYS.CALORIES, JSON.stringify(state));
@@ -1894,38 +1797,82 @@
     };
 
     // ==== РЕЦЕПТЫ ====
-    var recipesBatchSize = 4; // сколько рецептов добавляем за раз
+    function openRecipeModal(recipe) {
+      modalRecipeTitleEl.innerHTML = recipe.title;
+      modalRecipeTypeKcalEl.innerHTML = recipe.type + " • " + recipe.kcal + " ккал";
+      modalRecipeMacrosEl.innerHTML =
+        "Б: " + recipe.protein + " г • Ж: " + recipe.fat + " г • У: " + recipe.carbs + " г";
+
+      modalIngredientsListEl.innerHTML = "";
+      for (var i = 0; i < recipe.ingredients.length; i++) {
+        var ing = recipe.ingredients[i];
+        var li = document.createElement("li");
+        li.innerHTML = ing.name + " — " + ing.amount + " " + ing.unit;
+        modalIngredientsListEl.appendChild(li);
+      }
+
+      modalStepsListEl.innerHTML = "";
+      for (var j = 0; j < recipe.steps.length; j++) {
+        var st = recipe.steps[j];
+        var li2 = document.createElement("li");
+        li2.innerHTML = st;
+        modalStepsListEl.appendChild(li2);
+      }
+
+      recipeModalEl.classList.add("active");
+    }
+    function closeRecipeModal() {
+      recipeModalEl.classList.remove("active");
+    }
+
+    modalCloseBtn.onclick = closeRecipeModal;
+    recipeModalEl.onclick = function (e) {
+      if (e.target === recipeModalEl ||
+          (e.target && e.target.classList && e.target.classList.contains("modal-backdrop"))) {
+        closeRecipeModal();
+      }
+    };
+
+    function getRandomRecipe() {
+      var idx = Math.floor(Math.random() * RECIPES.length);
+      return RECIPES[idx];
+    }
+
+    function createRecipeCard(r) {
+      var card = document.createElement("article");
+      card.className = "recipe-card";
+      card.innerHTML =
+        '<div class="recipe-type">' + r.type + "</div>" +
+        '<div class="recipe-title">' + r.title + "</div>" +
+        '<div class="recipe-meta">' +
+          "<span>" + r.kcal + " ккал</span>" +
+          '<span class="recipe-tag">' + (r.tag || "Полезное ПП") + "</span>" +
+        "</div>" +
+        '<div class="recipe-macros">' +
+          "<span>Б: " + r.protein + " г</span>" +
+          "<span>Ж: " + r.fat + " г</span>" +
+          "<span>У: " + r.carbs + " г</span>" +
+        "</div>";
+      card.recipeData = r;
+      card.onclick = function () {
+        openRecipeModal(card.recipeData);
+      };
+      return card;
+    }
+
+    var recipesBatchSize = 4;
 
     function renderRecipes(append) {
-      // если append не указан или равен false — очищаем список и начинаем сначала
       if (!append) {
         recipesListEl.innerHTML = "";
       }
-
-      var items = getRandomRecipes(recipesBatchSize);
-      for (var i = 0; i < items.length; i++) {
-        var r = items[i];
-        var card = document.createElement("article");
-        card.className = "recipe-card";
-        card.innerHTML =
-          '<div class="recipe-type">' + r.type + '</div>' +
-          '<div class="recipe-title">' + r.title + '</div>' +
-          '<div class="recipe-meta">' +
-            '<span>' + r.kcal + ' ккал</span>' +
-            '<span class="recipe-tag">' + (r.tag || "Полезное ПП") + '</span>' +
-          '</div>' +
-          '<div class="recipe-macros">' +
-            '<span>Б: ' + r.protein + ' г</span>' +
-            '<span>Ж: ' + r.fat + ' г</span>' +
-            '<span>У: ' + r.carbs + ' г</span>' +
-          '</div>';
-        card.recipeData = r;
-        card.onclick = function () { openRecipeModal(this.recipeData); };
+      for (var i = 0; i < recipesBatchSize; i++) {
+        var r = getRandomRecipe();
+        var card = createRecipeCard(r);
         recipesListEl.appendChild(card);
       }
     }
 
-    // при нажатии "Ещё идеи" добавляем НОВУЮ порцию рецептов, не очищая список
     recipesRefreshBtn.onclick = function () {
       renderRecipes(true);
     };
