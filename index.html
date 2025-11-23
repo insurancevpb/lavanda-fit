@@ -927,21 +927,94 @@
           </div>
         </section>
 
-        <!-- Питание -->
-        <section class="tab" id="tab-meals">
-          <div class="card">
-            <div class="recipes-header">
-              <div>
-                <div class="card-title">Идеи ПП‑приёмов пищи</div>
-                <div class="recipes-note">Нажми на блюдо — откроется рецепт и граммовки</div>
-              </div>
-              <button class="btn btn-sm" id="recipesRefreshBtn">Ещё идеи</button>
-            </div>
-            <div id="recipesList" class="recipes-list"></div>
-          </div>
-        </section>
+           // ==== РЕЦЕПТЫ ====
+    function openRecipeModal(recipe) {
+      modalRecipeTitleEl.innerHTML = recipe.title;
+      modalRecipeTypeKcalEl.innerHTML = recipe.type + " • " + recipe.kcal + " ккал";
+      modalRecipeMacrosEl.innerHTML =
+        "Б: " + recipe.protein + " г • Ж: " + recipe.fat + " г • У: " + recipe.carbs + " г";
 
-        <!-- Микродвижения -->
+      modalIngredientsListEl.innerHTML = "";
+      for (var i = 0; i < recipe.ingredients.length; i++) {
+        var ing = recipe.ingredients[i];
+        var li = document.createElement("li");
+        li.innerHTML = ing.name + " — " + ing.amount + " " + ing.unit;
+        modalIngredientsListEl.appendChild(li);
+      }
+
+      modalStepsListEl.innerHTML = "";
+      for (var j = 0; j < recipe.steps.length; j++) {
+        var st = recipe.steps[j];
+        var li2 = document.createElement("li");
+        li2.innerHTML = st;
+        modalStepsListEl.appendChild(li2);
+      }
+
+      recipeModalEl.classList.add("active");
+    }
+
+    function closeRecipeModal() {
+      recipeModalEl.classList.remove("active");
+    }
+
+    modalCloseBtn.onclick = closeRecipeModal;
+    recipeModalEl.onclick = function (e) {
+      if (e.target === recipeModalEl ||
+          (e.target && e.target.classList && e.target.classList.contains("modal-backdrop"))) {
+        closeRecipeModal();
+      }
+    };
+
+    // одна случайная запись из массива RECIPES
+    function getRandomRecipe() {
+      var idx = Math.floor(Math.random() * RECIPES.length);
+      return RECIPES[idx];
+    }
+
+    // создание карточки рецепта
+    function createRecipeCard(r) {
+      var card = document.createElement("article");
+      card.className = "recipe-card";
+      card.innerHTML =
+        '<div class="recipe-type">' + r.type + "</div>" +
+        '<div class="recipe-title">' + r.title + "</div>" +
+        '<div class="recipe-meta">' +
+          "<span>" + r.kcal + " ккал</span>" +
+          '<span class="recipe-tag">' + (r.tag || "Полезное ПП") + "</span>" +
+        "</div>" +
+        '<div class="recipe-macros">' +
+          "<span>Б: " + r.protein + " г</span>" +
+          "<span>Ж: " + r.fat + " г</span>" +
+          "<span>У: " + r.carbs + " г</span>" +
+        "</div>";
+
+      card.recipeData = r;
+      card.onclick = function () {
+        openRecipeModal(card.recipeData);
+      };
+      return card;
+    }
+
+    // сколько рецептов добавляем за один раз
+    var recipesBatchSize = 4;
+
+    // append = true -> добавляем, false/undefined -> очищаем и создаём заново
+    function renderRecipes(append) {
+      if (!append) {
+        recipesListEl.innerHTML = "";
+      }
+      for (var i = 0; i < recipesBatchSize; i++) {
+        var r = getRandomRecipe();
+        var card = createRecipeCard(r);
+        recipesListEl.appendChild(card);
+      }
+    }
+
+    // кнопка "Ещё идеи" — бесконечно добавляем новые рецепты
+    recipesRefreshBtn.onclick = function () {
+      renderRecipes(true);
+    };
+    // ==== МИКРОДВИЖЕНИЯ ====
         <section class="tab" id="tab-micro">
           <div class="card">
             <div class="card-header">
