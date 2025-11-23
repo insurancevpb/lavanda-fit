@@ -1943,8 +1943,9 @@
       }
     }
 
-    recipesRefreshBtn.onclick = function () {
-      renderRecipes(true);
+       recipesRefreshBtn.onclick = function () {
+      // каждый раз генерируем НОВЫЙ набор, старые удаляем
+      renderRecipes(false);
     };
 
     // ==== МИКРОДВИЖЕНИЯ ====
