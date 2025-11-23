@@ -1250,7 +1250,14 @@
     var calorieTargetTextEl = document.getElementById("calorieTargetText");
     var caloriesTargetEl = document.getElementById("caloriesTarget");
     var waterTargetEl = document.getElementById("waterTarget");
-
+    var dashboardEditBtn = document.getElementById("dashboardEditBtn");
+    var dashboardClearBtn = document.getElementById("dashboardClearBtn");
+    var mealsEditBtn = document.getElementById("mealsEditBtn");
+    var mealsClearBtn = document.getElementById("mealsClearBtn");
+    var microEditBtn = document.getElementById("microEditBtn");
+    var microClearBtn = document.getElementById("microClearBtn");
+    var diaryEditBtn = document.getElementById("diaryEditBtn");
+    var diaryClearBtn = document.getElementById("diaryClearBtn");
     var weightGraphCanvasEl = document.getElementById("weightGraphCanvas");
     var weightEmptyEl = document.getElementById("weightEmptyText");
     var weightYAxisEl = document.getElementById("weightYAxis");
@@ -1789,6 +1796,84 @@
     };
 
     // ==== ИНИЦИАЛИЗАЦИЯ ====
+       // ==== КНОПКИ "РЕДАКТИРОВАТЬ" / "СТЕРЕТЬ" НА ВКЛАДКАХ ====
+
+    // Главная: редактировать = фокус на вес, стереть = сброс профиля, веса, воды и калорий
+    if (dashboardEditBtn) {
+      dashboardEditBtn.onclick = function () {
+        weightEl.focus();
+        window.scrollTo(0, 0);
+      };
+    }
+
+    if (dashboardClearBtn) {
+      dashboardClearBtn.onclick = function () {
+        if (!confirm("Очистить профиль, график веса, воду и калории?")) return;
+
+        if (storageAvailable) {
+          try {
+            localStorage.removeItem(STORAGE_KEYS.PROFILE);
+            localStorage.removeItem(STORAGE_KEYS.WEIGHTS);
+            localStorage.removeItem(STORAGE_KEYS.WATER);
+            localStorage.removeItem(STORAGE_KEYS.CALORIES);
+          } catch (e) {}
+        }
+
+        genderEl.value = "female";
+        activityEl.value = "1.2";
+        heightEl.value = "";
+        weightEl.value = "";
+
+        weightHistory = [];
+        waterState = { date: todayKey(), value: 0 };
+        caloriesState = { date: todayKey(), value: 0 };
+
+        updateProfileFromUI(false);
+        renderWeightGraph();
+        syncWaterProgress();
+        syncCaloriesProgress();
+      };
+    }
+
+    // Питание: редактировать = сгенерировать новые рецепты, стереть = убрать список
+    if (mealsEditBtn) {
+      mealsEditBtn.onclick = function () {
+        renderRecipes();
+      };
+    }
+    if (mealsClearBtn) {
+      mealsClearBtn.onclick = function () {
+        recipesListEl.innerHTML = "";
+      };
+    }
+
+    // Микродвижения: редактировать = обновить список, стереть = очистить
+    if (microEditBtn) {
+      microEditBtn.onclick = function () {
+        renderMicroMoves();
+      };
+    }
+    if (microClearBtn) {
+      microClearBtn.onclick = function () {
+        microListEl.innerHTML = "";
+      };
+    }
+
+    // Дневник: редактировать = фокус на поле ввода, стереть = удалить все записи
+    if (diaryEditBtn) {
+      diaryEditBtn.onclick = function () {
+        diaryTitleInputEl.focus();
+        window.scrollTo(0, document.getElementById("tab-diary").offsetTop || 0);
+      };
+    }
+    if (diaryClearBtn) {
+      diaryClearBtn.onclick = function () {
+        if (!confirm("Удалить все записи дневника?")) return;
+        diaryEntries = [];
+        saveDiary(diaryEntries);
+        renderDiary();
+      };
+    }
     renderWeightGraph();
     syncWaterProgress();
     syncCaloriesProgress();
